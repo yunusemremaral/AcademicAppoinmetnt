@@ -2,20 +2,24 @@
 using Microsoft.AspNetCore.Identity;
 using AcademicAppoinmetnt.EntityLayer.Identity;
 using AcademicAppoinmetnt.Presentation.Models;
+using System.Threading.Tasks;
 
 namespace AcademicAppoinmetnt.Presentation.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly UserManager<AppUser> _userManager;
+        private readonly SignInManager<AppUser> _signInManager;
+        private readonly RoleManager<AppRole> _roleManager;
 
         public AccountController(
-            UserManager<ApplicationUser> userManager,
-            SignInManager<ApplicationUser> signInManager)
+            UserManager<AppUser> userManager,
+            SignInManager<AppUser> signInManager,
+            RoleManager<AppRole> roleManager)
         {
             _userManager = userManager;
             _signInManager = signInManager;
+            _roleManager = roleManager;
         }
 
         // GET: Account/Register
@@ -30,7 +34,7 @@ namespace AcademicAppoinmetnt.Presentation.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser
+                var user = new AppUser
                 {
                     UserName = model.Email,
                     Email = model.Email,
@@ -47,7 +51,7 @@ namespace AcademicAppoinmetnt.Presentation.Controllers
 
                 foreach (var error in result.Errors)
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    ModelState.AddModelError("", error.Description);
                 }
             }
 
@@ -74,7 +78,7 @@ namespace AcademicAppoinmetnt.Presentation.Controllers
                     return RedirectToAction("Index", "Home");
                 }
 
-                ModelState.AddModelError(string.Empty, "Geçersiz giriş denemesi.");
+                ModelState.AddModelError("", "Geçersiz giriş denemesi.");
             }
 
             return View(model);
@@ -86,6 +90,74 @@ namespace AcademicAppoinmetnt.Presentation.Controllers
         {
             await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
+        }
+
+        // GET: Account/CreateRole
+        public IActionResult CreateRole()
+        {
+            return View();
+        }
+
+        // POST: Account/CreateRole
+        [HttpPost]
+        public async Task<IActionResult> CreateRole(string roleName)
+        {
+            if (!string.IsNullOrEmpty(roleName))
+            {
+                var roleExists = await _roleManager.RoleExistsAsync(roleName);
+                if (!roleExists)
+                {
+                    var role = new AppRole { Name = roleName };
+                    var result = await _roleManager.CreateAsync(role);
+                    if (result.Succeeded)
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError("", "Bu rol zaten mevcut.");
+                }
+            }
+            return View();
+        }
+
+        // GET: Account/AssignRole
+        public IActionResult AssignRole()
+        {
+            return View();
+        }
+
+        // POST: Account/AssignRole
+        [HttpPost]
+        public async Task<IActionResult> AssignRole(string email, string roleName)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                ModelState.AddModelError("", "Kullanıcı bulunamadı.");
+                return View();
+            }
+
+            var roleExists = await _roleManager.RoleExistsAsync(roleName);
+            if (!roleExists)
+            {
+                ModelState.AddModelError("", "Böyle bir rol bulunamadı.");
+                return View();
+            }
+
+            var result = await _userManager.AddToRoleAsync(user, roleName);
+            if (result.Succeeded)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
+            foreach (var error in result.Errors)
+            {
+                ModelState.AddModelError("", error.Description);
+            }
+
+            return View();
         }
     }
 }

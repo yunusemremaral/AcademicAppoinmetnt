@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace AcademicAppoinmetnt.EntityLayer.Identity
 {
-    public class AppUser : IdentityUser
+    public class AppRole : IdentityRole
     {
-        public string SchoolNumber { get; set; }  
     }
+
 }
