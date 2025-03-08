@@ -162,8 +162,10 @@ namespace AcademicAppointment.Presentation.Controllers
                         return RedirectToAction("Profile", "Account");
 
                     }
+                    // mail adresini onaylayın
 
                 }
+                //kullanıcı adı veya şifre yanlş
 
                 ModelState.AddModelError("", "Geçersiz giriş denemesi.");
             }

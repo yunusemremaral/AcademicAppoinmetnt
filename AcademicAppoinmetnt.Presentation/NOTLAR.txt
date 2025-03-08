@@ -1,0 +1,4 @@
+﻿Kullanıcıya hosgeldin maili olabilir onaydan sonra 
+Login kısmında cookie olaylarına bakcıaz 
+register suanlık tamam
+sonradan yeni kısıma baslıcaz yeni tablolar ekleyip onları migration ile ekliscez .
