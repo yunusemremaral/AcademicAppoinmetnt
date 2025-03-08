@@ -1,0 +1,25 @@
+﻿@model ConfirmMailViewModel
+@{
+    ViewData["Title"] = "ConfirmMail";
+    Layout = "~/Views/Shared/_LayoutAcademic.cshtml";
+}
+
+<h1>ConfirmMail</h1>
+
+<div class="container">
+    <br />
+    <form method="post">
+        <h2>Taşınan Mail Adresi:@ViewBag.v</h2>
+        <br />
+        <label>Kullanıcı Id Degeri</label>
+        <input type="text" class="form-control"  value="@ViewBag.v" asp-for="Mail" />
+        <br />
+        <label>Mail adresine gelen kodu giriniz</label>
+        <input type="text" class="form-control" asp-for="ConfirmCode" />
+        <br />
+        <button class="btn btn-outline-primary">Hesabı Aktifleştir</button>
+    </form>
+
+</div>
+
+

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace AcademicAppoinmetnt.Presentation.Models
+namespace AcademicAppointment.Presentation.Models
 {
     public class LoginViewModel
     {

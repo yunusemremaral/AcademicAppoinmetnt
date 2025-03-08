@@ -2,6 +2,7 @@ using AcademicAppoinmetnt.DataAccessLayer.Abstract;
 using AcademicAppoinmetnt.DataAccessLayer.Context;
 using AcademicAppoinmetnt.DataAccessLayer.Repositories;
 using AcademicAppoinmetnt.EntityLayer.Identity;
+using AcademicAppointment.Presentation.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,6 +14,7 @@ builder.Services.AddDbContext<IdentityContext>(options => options.UseSqlServer(c
 
 // Identity Servisleri
 builder.Services.AddIdentity<AppUser, AppRole>()
+    .AddErrorDescriber<CustomIdentityValidation>() 
     .AddEntityFrameworkStores<IdentityContext>()
     .AddDefaultTokenProviders();
 
@@ -24,6 +26,7 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddControllersWithViews();
 
 var app = builder.Build();
+app.UseStaticFiles();
 app.UseAuthentication();
 app.UseAuthorization();
 

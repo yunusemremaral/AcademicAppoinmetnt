@@ -10,5 +10,6 @@ namespace AcademicAppoinmetnt.EntityLayer.Identity
     public class AppUser : IdentityUser
     {
         public string SchoolNumber { get; set; }  
+        public int? ConfirmCode { get; set; }  
     }
 }

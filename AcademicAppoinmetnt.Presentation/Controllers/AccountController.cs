@@ -1,10 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
 using AcademicAppoinmetnt.EntityLayer.Identity;
-using AcademicAppoinmetnt.Presentation.Models;
+using AcademicAppointment.Presentation.Models;
 using System.Threading.Tasks;
+using MimeKit;
+using MailKit.Net.Smtp;
 
-namespace AcademicAppoinmetnt.Presentation.Controllers
+namespace AcademicAppointment.Presentation.Controllers
 {
     public class AccountController : Controller
     {
@@ -23,6 +25,7 @@ namespace AcademicAppoinmetnt.Presentation.Controllers
         }
 
         // GET: Account/Register
+        // GET: Account/Register
         public IActionResult Register()
         {
             return View();
@@ -32,30 +35,108 @@ namespace AcademicAppoinmetnt.Presentation.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
+
             if (ModelState.IsValid)
             {
+                Random random = new Random();
+
+                int code = random.Next(10000, 100000);
+
+                // Aynı e-posta ile doğrulanmamış kullanıcıyı kontrol et
+                var existingUser = await _userManager.FindByEmailAsync(model.Email);
+
+                if (existingUser != null)
+                {
+                    if (!existingUser.EmailConfirmed)
+                    {
+                        // Doğrulanmamış kullanıcıyı sil
+                        await _userManager.DeleteAsync(existingUser);
+                    }
+                    else
+                    {
+                        // Eğer kullanıcı doğrulanmışsa, hata döndür
+                        ModelState.AddModelError("", "Bu e-posta adresi zaten kullanılıyor.");
+                        return View(model);
+                    }
+                }
+
+
+                // Yeni kullanıcı oluşturuluyor
                 var user = new AppUser
                 {
-                    UserName = model.Email,
+                    UserName = model.Email,  // Email'i kullanıcı adı olarak kullanıyoruz
                     Email = model.Email,
-                    SchoolNumber = model.SchoolNumber
+                    SchoolNumber = model.SchoolNumber,
+                    ConfirmCode = code
+
                 };
 
+                // Kullanıcıyı oluşturma işlemi
                 var result = await _userManager.CreateAsync(user, model.Password);
 
                 if (result.Succeeded)
                 {
-                    await _signInManager.SignInAsync(user, isPersistent: false);
-                    return RedirectToAction("Index", "Home");
+                    MimeMessage mimeMessage = new MimeMessage();
+                    MailboxAddress mailboxAddressFrom = new MailboxAddress("Academic Appointment Admin", "dolandiriciliklamucadeleet@gmail.com");
+                    MailboxAddress mailboxAddressTo = new MailboxAddress("User", user.Email);
+                    mimeMessage.From.Add(mailboxAddressFrom);
+                    mimeMessage.To.Add(mailboxAddressTo);
+
+                    var bodybuilder = new BodyBuilder();
+                    bodybuilder.TextBody = "Kayıt işlemini gerçekleştirmek için onay kodunuz :" + code;
+                    mimeMessage.Body = bodybuilder.ToMessageBody();
+                    mimeMessage.Subject = "Academic Appointment Onay Kodu";
+
+                    SmtpClient client = new SmtpClient();
+                    client.Connect("smtp.gmail.com", 587, false);
+                    client.Authenticate("dolandiriciliklamucadeleet", "pddagdtfbczidkdq");
+                    client.Send(mimeMessage);
+                    client.Disconnect(true);
+
+                    TempData["Mail"] = user.Email;
+
+                    // Başarılıysa ana sayfaya yönlendiriyoruz
+                    return RedirectToAction("ConfirmMail", "Account");
                 }
 
+                // Hata varsa ModelState'e ekliyoruz
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError("", error.Description);
                 }
             }
 
+            // Eğer model geçerli değilse veya işlem başarısız olduysa tekrar formu gösteriyoruz
             return View(model);
+        }
+
+        [HttpGet]
+        public IActionResult ConfirmMail(int id)
+        {
+            var value = TempData["Mail"];
+            ViewBag.v = value;
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ConfirmMail(ConfirmMailViewModel confirmMailViewModel)
+        {
+             
+            
+            var user = await _userManager.FindByEmailAsync(confirmMailViewModel.Mail);
+            if (user.ConfirmCode == confirmMailViewModel.ConfirmCode)
+            {
+                user.EmailConfirmed = true;
+                await _userManager.UpdateAsync(user);
+                return RedirectToAction("Login", "Account");
+            }
+            return View();
+        }
+
+        [HttpGet]
+        public IActionResult Profile()
+        {
+            return View();
         }
 
         // GET: Account/Login
@@ -71,11 +152,17 @@ namespace AcademicAppoinmetnt.Presentation.Controllers
             if (ModelState.IsValid)
             {
                 var result = await _signInManager.PasswordSignInAsync(
-                    model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
+                    model.Email, model.Password, false, true);
 
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("Index", "Home");
+                    var user =await _userManager.FindByEmailAsync(model.Email);
+                    if (user.EmailConfirmed == true)
+                    {
+                        return RedirectToAction("Profile", "Account");
+
+                    }
+
                 }
 
                 ModelState.AddModelError("", "Geçersiz giriş denemesi.");

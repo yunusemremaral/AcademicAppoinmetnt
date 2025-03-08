@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace AcademicAppoinmetnt.Presentation.Models
+namespace AcademicAppointment.Presentation.Models
 {
     public class RegisterViewModel
     {
@@ -18,6 +18,8 @@ namespace AcademicAppoinmetnt.Presentation.Models
 
         [Required]
         public string SchoolNumber { get; set; }
-    }
 
+        public int? ConfirmCode { get; set; }
+
+    }
 }

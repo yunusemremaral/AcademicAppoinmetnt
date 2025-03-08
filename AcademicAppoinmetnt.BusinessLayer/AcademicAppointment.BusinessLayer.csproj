@@ -20,8 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AcademicAppoinmetnt.DataAccessLayer\AcademicAppoinmetnt.DataAccessLayer.csproj" />
-    <ProjectReference Include="..\AcademicAppoinmetnt.EntityLayer\AcademicAppoinmetnt.EntityLayer.csproj" />
+    <ProjectReference Include="..\AcademicAppoinmetnt.DataAccessLayer\AcademicAppointment.DataAccessLayer.csproj" />
+    <ProjectReference Include="..\AcademicAppoinmetnt.EntityLayer\AcademicAppointment.EntityLayer.csproj" />
   </ItemGroup>
 
 </Project>

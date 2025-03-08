@@ -1,4 +1,4 @@
-﻿namespace AcademicAppoinmetnt.Presentation.Models
+﻿namespace AcademicAppointment.Presentation.Models
 {
     public class RoleViewModel
     {
