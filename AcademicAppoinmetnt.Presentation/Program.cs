@@ -1,7 +1,7 @@
 using AcademicAppoinmetnt.DataAccessLayer.Abstract;
 using AcademicAppoinmetnt.DataAccessLayer.Context;
 using AcademicAppoinmetnt.DataAccessLayer.Repositories;
-using AcademicAppoinmetnt.EntityLayer.Identity;
+using AcademicAppointment.EntityLayer.Identity;
 using AcademicAppointment.Presentation.Models;
 using AcademicAppointment.Presentation.Services;
 using Hangfire;
@@ -29,6 +29,7 @@ builder.Services.AddHangfireServer();  // Hangfire server'ını başlatıyoruz
 builder.Services.AddScoped<IAppUserRepository, AppUserRepository>();
 builder.Services.AddScoped<IAppRoleRepository, AppRoleRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+
 
 builder.Services.AddControllersWithViews();
 

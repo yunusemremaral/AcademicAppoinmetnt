@@ -1,0 +1,11 @@
+﻿@model IEnumerable<AppUser>
+@{
+    ViewData["Title"] = "UserList";
+    Layout = "~/Views/Shared/_LayoutAcademic.cshtml";
+}
+
+<
+@foreach(var item in Model)
+{
+    <h1>@item.Email</h1>    
+}

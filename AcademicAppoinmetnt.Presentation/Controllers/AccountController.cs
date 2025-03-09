@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
-using AcademicAppoinmetnt.EntityLayer.Identity;
 using AcademicAppointment.Presentation.Models;
 using System.Threading.Tasks;
 using MimeKit;
 using MailKit.Net.Smtp;
+using AcademicAppointment.EntityLayer.Identity;
 
 namespace AcademicAppointment.Presentation.Controllers
 {

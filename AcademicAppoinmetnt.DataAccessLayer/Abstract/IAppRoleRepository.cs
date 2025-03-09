@@ -1,4 +1,4 @@
-﻿using AcademicAppoinmetnt.EntityLayer.Identity;
+﻿using AcademicAppointment.EntityLayer.Identity;
 using System.Threading.Tasks;
 
 namespace AcademicAppoinmetnt.DataAccessLayer.Abstract

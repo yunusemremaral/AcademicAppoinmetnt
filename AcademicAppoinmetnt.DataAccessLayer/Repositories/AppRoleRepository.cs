@@ -1,6 +1,6 @@
 ﻿using AcademicAppoinmetnt.DataAccessLayer.Abstract;
 using AcademicAppoinmetnt.DataAccessLayer.Context;
-using AcademicAppoinmetnt.EntityLayer.Identity;
+using AcademicAppointment.EntityLayer.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 

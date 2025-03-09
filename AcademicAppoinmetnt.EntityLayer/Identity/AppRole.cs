@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace AcademicAppoinmetnt.EntityLayer.Identity
+namespace AcademicAppointment.EntityLayer.Identity
 {
     public class AppRole : IdentityRole
     {
