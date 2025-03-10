@@ -140,52 +140,6 @@ public class AdminController : Controller
     }
 
 
-    [HttpGet]
-    public IActionResult CreateRole()
-    {
-        return View();
-    }
-
-    // Yeni rol oluşturma işlemi
-    [HttpPost]
-    public async Task<IActionResult> CreateRole(string roleName)
-    {
-        if (string.IsNullOrEmpty(roleName))
-        {
-            ModelState.AddModelError("", "Rol adı boş olamaz.");
-            return View();
-        }
-
-        var existingRole = await _roleManager.FindByNameAsync(roleName);
-        if (existingRole != null)
-        {
-            ModelState.AddModelError("", "Bu rol zaten mevcut.");
-            return View();
-        }
-
-        // IdentityRole yerine AppRole kullanıyoruz
-        var role = new AppRole { Name = roleName }; // AppRole kullanarak rolü oluşturuyoruz
-        var result = await _roleManager.CreateAsync(role);
-
-        if (result.Succeeded)
-        {
-            return RedirectToAction("RoleList");
-        }
-
-        foreach (var error in result.Errors)
-        {
-            ModelState.AddModelError("", error.Description);
-        }
-
-        return View();
-    }
-
-
-    // Rol listesi
-    public async Task<IActionResult> RoleList()
-    {
-        var roles = _roleManager.Roles.ToList();
-        return View(roles);
-    }
+    
 
 }

@@ -1,0 +1,18 @@
+﻿@model AppRole
+
+@{
+    ViewData["Title"] = "Rol Güncelle";
+}
+
+
+<form method="post">
+    <div class="form-group">
+        <input type="hidden" asp-for="Id" />
+
+        <label for="roleName">Rol Adı:</label>
+        <input type="text" class="form-control" id="roleName" name="Name" value="@Model.Name" required />
+    </div>
+    <button type="submit" class="btn btn-primary">Güncelle</button>
+</form>
+
+

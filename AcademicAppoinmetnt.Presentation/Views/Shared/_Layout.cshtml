@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/AcademicAppoinmetnt.Presentation.styles.css" asp-append-version="true" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.min.js" ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.3/js/bootstrap.min.js"></script>
 </head>
 <body>
     <header>
@@ -20,11 +20,21 @@
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
+                        <!-- Register and Login Links -->
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link text-dark" asp-controller="Account" asp-action="Register">Register</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                            <a class="nav-link text-dark" asp-controller="Account" asp-action="Login">Login</a>
+                        </li>
+                        <!-- Admin Section (User List, Assign Role) -->
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Admin" asp-action="UserList">User List</a>
+                        </li>
+                        
+                        <!-- Role Section (Role List) -->
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-controller="Role" asp-action="RoleList">Role List</a>
                         </li>
                     </ul>
                 </div>

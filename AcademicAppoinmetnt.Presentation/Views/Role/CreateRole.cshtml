@@ -1,0 +1,22 @@
+﻿@model string
+
+@{
+    ViewData["Title"] = "Rol Oluştur";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form method="post">
+    <div class="form-group">
+        <label for="roleName">Rol Adı:</label>
+        <input type="text" class="form-control" id="roleName" name="roleName" value="@Model" required />
+    </div>
+    <button type="submit" class="btn btn-primary">Oluştur</button>
+</form>
+
+@foreach (var error in ViewData.ModelState.Values)
+{
+    <div class="text-danger">
+        @error.Errors[0].ErrorMessage
+    </div>
+}
