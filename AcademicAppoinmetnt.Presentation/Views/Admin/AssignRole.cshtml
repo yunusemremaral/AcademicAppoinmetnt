@@ -1,0 +1,27 @@
+﻿@model AssignRoleViewModel
+
+@{
+    ViewData["Title"] = "Assign Role";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form method="post">
+    <div class="form-group">
+        <label for="UserId">User: @ViewBag.email</label>
+        <input type="text" class="form-control" id="UserId" name="UserId" value="@Model.UserId" hidden />
+    </div>
+
+    <div class="form-group">
+        <label for="SelectedRole">Assign Role</label>
+        <select class="form-control" id="SelectedRole" name="SelectedRole" required>
+            <option value="">Select Role</option>
+            @foreach (var role in Model.Roles)
+            {
+                <option value="@role.Value">@role.Text</option>
+            }
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Assign Role</button>
+</form>

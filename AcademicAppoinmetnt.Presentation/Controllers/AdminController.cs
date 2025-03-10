@@ -1,134 +1,191 @@
 ﻿using AcademicAppoinmetnt.DataAccessLayer.Abstract;
-using Microsoft.AspNetCore.Mvc;
 using AcademicAppointment.EntityLayer.Identity;
-using Microsoft.AspNetCore.Identity;
 using AcademicAppointment.Presentation.Models;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
-namespace AcademicAppointment.Presentation.Controllers
+public class AdminController : Controller
 {
-    public class AdminController : Controller
+    private readonly IAppUserRepository _appUserRepository;
+    private readonly UserManager<AppUser> _userManager;
+    private readonly RoleManager<AppRole> _roleManager;
+
+    public AdminController(IAppUserRepository appUserRepository, UserManager<AppUser> userManager, RoleManager<AppRole> roleManager)
     {
-        private readonly IAppUserRepository _appUserRepository;
-        private readonly UserManager<AppUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        _appUserRepository = appUserRepository;
+        _userManager = userManager;
+        _roleManager = roleManager;
+    }
 
-        public AdminController(IAppUserRepository appUserRepository, UserManager<AppUser> userManager, RoleManager<IdentityRole> roleManager)
+    // Kullanıcı listesi
+    public async Task<IActionResult> UserList()
+    {
+        var users = await _appUserRepository.GetAllAsync();
+        var userList = users.Select(u => new AppUserViewModel
         {
-            _appUserRepository = appUserRepository;
-            _userManager = userManager;
-            _roleManager = roleManager;
+            Email = u.Email,
+            SchoolNumber = u.SchoolNumber
+        }).ToList();
+
+        return View(userList);
+    }
+
+    // Kullanıcıyı silme
+    [HttpPost]
+    public async Task<IActionResult> DeleteUser(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user != null)
+        {
+            await _userManager.DeleteAsync(user);
         }
+        return RedirectToAction("UserList");
+    }
 
-        // Kullanıcı listesi, yalnızca mail adresleri gösterilecek
-        public async Task<IActionResult> UserList()
+    // Kullanıcı düzenleme
+    [HttpGet]
+    public async Task<IActionResult> EditUser(string email)
+    {
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user != null)
         {
-            var users = await _appUserRepository.GetAllAsync();
-            var userEmails = users.Select(u => u.Email).ToList(); // Yalnızca mail adreslerini alıyoruz
-            return View(userEmails);
+            return View(user);
         }
+        return RedirectToAction("UserList");
+    }
 
-        // Kullanıcıyı silme işlemi
-        [HttpPost]
-        public async Task<IActionResult> DeleteUser(string email)
+    // Kullanıcı düzenleme kaydetme
+    [HttpPost]
+    public async Task<IActionResult> EditUser(AppUser model)
+    {
+        if (ModelState.IsValid)
         {
-            var user = await _userManager.FindByEmailAsync(email);
+            var user = await _userManager.FindByIdAsync(model.Id);
             if (user != null)
             {
-                await _userManager.DeleteAsync(user);
-                // Kullanıcı başarıyla silindi
-            }
-            return RedirectToAction("UserList");
-        }
+                user.Email = model.Email;
+                user.UserName = model.UserName;
+                user.SchoolNumber = model.SchoolNumber; // SchoolNumber'ı güncelliyoruz
 
-        // Kullanıcı düzenleme işlemi
-        [HttpGet]
-        public async Task<IActionResult> EditUser(string email)
-        {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user != null)
-            {
-                return View(user);  // Kullanıcıyı düzenlemeye yönlendiren view
-            }
-            return RedirectToAction("UserList");
-        }
-
-        // Kullanıcı düzenleme işlemini kaydetme
-        [HttpPost]
-        public async Task<IActionResult> EditUser(AppUser model)
-        {
-            if (ModelState.IsValid)
-            {
-                var user = await _userManager.FindByIdAsync(model.Id);
-                if (user != null)
+                var result = await _userManager.UpdateAsync(user);
+                if (result.Succeeded)
                 {
-                    user.Email = model.Email;
-                    user.UserName = model.UserName;
-                    // Diğer özellikler burada güncellenebilir
-
-                    var result = await _userManager.UpdateAsync(user);
-                    if (result.Succeeded)
-                    {
-                        return RedirectToAction("UserList");
-                    }
+                    return RedirectToAction("UserList");
                 }
             }
-            return View(model);
         }
+        return View(model);
+    }
 
-        // Kullanıcıya rollerin listelendiği formu gösterme
-        [HttpGet]
-        public async Task<IActionResult> AssignRole(string email)
+    // Kullanıcıya rol atama
+    [HttpGet]
+    public async Task<IActionResult> AssignRole(string email)
+    {
+        
+        var user = await _userManager.FindByEmailAsync(email);
+        if (user == null)
         {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user == null)
+            return RedirectToAction("UserList");
+        }
+        ViewBag.email = user.Email;
+
+        // Mevcut rolleri RoleManager ile alıyoruz
+        var roles = await _roleManager.Roles.Select(role => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem
+        {
+            Value = role.Name,  // Rolün adı
+            Text = role.Name    // Rolün adı
+        }).ToListAsync();
+
+        var model = new AssignRoleViewModel
+        {
+            UserId = user.Id,
+            Roles = roles
+        };
+
+        return View(model);
+    }
+
+
+    // Kullanıcıya rol atama işlemi
+    [HttpPost]
+    public async Task<IActionResult> AssignRole(AssignRoleViewModel model)
+    {
+        var user = await _userManager.FindByIdAsync(model.UserId);
+        if (user != null)
+        {
+            // Kullanıcının mevcut rollerini alıyoruz
+            var currentRoles = await _userManager.GetRolesAsync(user);
+
+            // Eski rollerden çıkarıyoruz
+            var removeResult = await _userManager.RemoveFromRolesAsync(user, currentRoles);
+            if (!removeResult.Succeeded)
             {
-                return RedirectToAction("UserList");
+                return View(model);  // Bir hata oluşursa view'da gösterecek
             }
 
-            // Rollerimizi burada tanımlıyoruz
-            var roles = new List<string> { "Admin", "Academician", "Student" };
-
-            // Rolleri SelectListItem formatına çeviriyoruz
-            var model = new AssignRoleViewModel
+            // Seçilen rolü alıyoruz ve kullanıcıya atıyoruz
+            var selectedRole = await _roleManager.FindByNameAsync(model.SelectedRole);
+            if (selectedRole != null)
             {
-                UserId = user.Id,
-                Roles = roles.Select(role => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem
-                {
-                    Value = role,
-                    Text = role
-                }).ToList()
-            };
-
-            return View(model);
-        }
-
-
-        // Kullanıcıya rol atama işlemi
-        [HttpPost]
-        public async Task<IActionResult> AssignRole(AssignRoleViewModel model)
-        {
-            var user = await _userManager.FindByIdAsync(model.UserId);
-            if (user != null)
-            {
-                var currentRoles = await _userManager.GetRolesAsync(user);
-
-                // Kullanıcının önceki rollerini silip yeni rolü ekliyoruz
-                var removeResult = await _userManager.RemoveFromRolesAsync(user, currentRoles);
-                if (!removeResult.Succeeded)
-                {
-                    // Hata durumunda kullanıcıyı bilgilendirebiliriz
-                    return View(model);
-                }
-
-                var addResult = await _userManager.AddToRoleAsync(user, model.SelectedRole);
+                var addResult = await _userManager.AddToRoleAsync(user, selectedRole.Name);
                 if (addResult.Succeeded)
                 {
                     return RedirectToAction("UserList");
                 }
             }
-
-            return View(model);
         }
 
+        return View(model);  // Başarısızsa view'ı döndürüyoruz
     }
+
+
+    [HttpGet]
+    public IActionResult CreateRole()
+    {
+        return View();
+    }
+
+    // Yeni rol oluşturma işlemi
+    [HttpPost]
+    public async Task<IActionResult> CreateRole(string roleName)
+    {
+        if (string.IsNullOrEmpty(roleName))
+        {
+            ModelState.AddModelError("", "Rol adı boş olamaz.");
+            return View();
+        }
+
+        var existingRole = await _roleManager.FindByNameAsync(roleName);
+        if (existingRole != null)
+        {
+            ModelState.AddModelError("", "Bu rol zaten mevcut.");
+            return View();
+        }
+
+        // IdentityRole yerine AppRole kullanıyoruz
+        var role = new AppRole { Name = roleName }; // AppRole kullanarak rolü oluşturuyoruz
+        var result = await _roleManager.CreateAsync(role);
+
+        if (result.Succeeded)
+        {
+            return RedirectToAction("RoleList");
+        }
+
+        foreach (var error in result.Errors)
+        {
+            ModelState.AddModelError("", error.Description);
+        }
+
+        return View();
+    }
+
+
+    // Rol listesi
+    public async Task<IActionResult> RoleList()
+    {
+        var roles = _roleManager.Roles.ToList();
+        return View(roles);
+    }
+
 }

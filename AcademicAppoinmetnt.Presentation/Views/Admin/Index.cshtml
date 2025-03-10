@@ -1,0 +1,16 @@
+﻿@model AssignRoleViewModel
+
+<h2>Assign Role</h2>
+
+<form method="post">
+    <div class="form-group">
+        <label for="SelectedRole">Role</label>
+        <select class="form-control" id="SelectedRole" name="SelectedRole" required>
+            @foreach (var role in Model.Roles)
+            {
+                <option value="@role.Value">@role.Text</option>
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Assign Role</button>
+</form>

@@ -1,6 +1,8 @@
 using AcademicAppoinmetnt.DataAccessLayer.Abstract;
 using AcademicAppoinmetnt.DataAccessLayer.Context;
 using AcademicAppoinmetnt.DataAccessLayer.Repositories;
+using AcademicAppointment.BusinessLayer.Abstract;
+using AcademicAppointment.BusinessLayer.Concrete;
 using AcademicAppointment.EntityLayer.Identity;
 using AcademicAppointment.Presentation.Models;
 using AcademicAppointment.Presentation.Services;
@@ -25,10 +27,17 @@ builder.Services.AddHangfire(config =>
     config.UseSqlServerStorage(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddHangfireServer();  // Hangfire server'ını başlatıyoruz
 
-// Repository ve UnitOfWork Bağımlılıklarını Ekle
 builder.Services.AddScoped<IAppUserRepository, AppUserRepository>();
 builder.Services.AddScoped<IAppRoleRepository, AppRoleRepository>();
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<IGenericRepository<AppUser>, GenericRepository<AppUser>>();
+builder.Services.AddScoped<IGenericRepository<AppRole>, GenericRepository<AppRole>>();
+builder.Services.AddScoped<IAppUserService, AppUserService>();
+builder.Services.AddScoped<IAppRoleService, AppRoleService>();
+builder.Services.AddScoped<IGenericService<AppUser>, GenericService<AppUser>>();
+builder.Services.AddScoped<IGenericService<AppRole>, GenericService<AppRole>>();
+builder.Services.AddScoped<IMailService, MailService>();
+
+
 
 
 builder.Services.AddControllersWithViews();

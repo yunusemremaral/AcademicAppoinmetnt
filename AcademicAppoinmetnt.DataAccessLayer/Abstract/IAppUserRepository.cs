@@ -6,6 +6,5 @@ namespace AcademicAppoinmetnt.DataAccessLayer.Abstract
 {
     public interface IAppUserRepository : IGenericRepository<AppUser>
     {
-        Task<AppUser> GetByEmailAsync(string email);
     }
 }

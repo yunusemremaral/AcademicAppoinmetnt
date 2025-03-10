@@ -10,9 +10,6 @@ namespace AcademicAppoinmetnt.DataAccessLayer.Repositories
     {
         public AppUserRepository(IdentityContext context) : base(context) { }
 
-        public async Task<AppUser> GetByEmailAsync(string email)
-        {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
-        }
+       
     }
 }

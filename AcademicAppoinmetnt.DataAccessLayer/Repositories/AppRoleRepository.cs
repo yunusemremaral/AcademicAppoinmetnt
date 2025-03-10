@@ -10,9 +10,6 @@ namespace AcademicAppoinmetnt.DataAccessLayer.Repositories
     {
         public AppRoleRepository(IdentityContext context) : base(context) { }
 
-        public async Task<AppRole> GetByNameAsync(string roleName)
-        {
-            return await _context.Roles.FirstOrDefaultAsync(r => r.Name == roleName);
-        }
+        
     }
 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using MimeKit;
 using MailKit.Net.Smtp;
 using AcademicAppointment.EntityLayer.Identity;
+using AcademicAppointment.BusinessLayer.Abstract;
 
 namespace AcademicAppointment.Presentation.Controllers
 {
@@ -13,38 +14,38 @@ namespace AcademicAppointment.Presentation.Controllers
         private readonly UserManager<AppUser> _userManager;
         private readonly SignInManager<AppUser> _signInManager;
         private readonly RoleManager<AppRole> _roleManager;
+        private readonly IMailService _mailService;
+
 
         public AccountController(
             UserManager<AppUser> userManager,
             SignInManager<AppUser> signInManager,
-            RoleManager<AppRole> roleManager)
+            RoleManager<AppRole> roleManager,
+            IMailService mailService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _roleManager = roleManager;
+            _mailService = mailService;
         }
 
-        // GET: Account/Register
-        // GET: Account/Register
-        public IActionResult Register()
+        [HttpGet]
+
+        public async Task<IActionResult> Register()
         {
             return View();
         }
-
         // POST: Account/Register
         [HttpPost]
         public async Task<IActionResult> Register(RegisterViewModel model)
         {
-
             if (ModelState.IsValid)
             {
                 Random random = new Random();
-
                 int code = random.Next(10000, 100000);
 
                 // Aynı e-posta ile doğrulanmamış kullanıcıyı kontrol et
                 var existingUser = await _userManager.FindByEmailAsync(model.Email);
-
                 if (existingUser != null)
                 {
                     if (!existingUser.EmailConfirmed)
@@ -54,59 +55,34 @@ namespace AcademicAppointment.Presentation.Controllers
                     }
                     else
                     {
-                        // Eğer kullanıcı doğrulanmışsa, hata döndür
                         ModelState.AddModelError("", "Bu e-posta adresi zaten kullanılıyor.");
                         return View(model);
                     }
                 }
 
-
-                // Yeni kullanıcı oluşturuluyor
                 var user = new AppUser
                 {
-                    UserName = model.Email,  // Email'i kullanıcı adı olarak kullanıyoruz
+                    UserName = model.Email,
                     Email = model.Email,
                     SchoolNumber = model.SchoolNumber,
                     ConfirmCode = code
-
                 };
 
-                // Kullanıcıyı oluşturma işlemi
                 var result = await _userManager.CreateAsync(user, model.Password);
-
                 if (result.Succeeded)
                 {
-                    MimeMessage mimeMessage = new MimeMessage();
-                    MailboxAddress mailboxAddressFrom = new MailboxAddress("Academic Appointment Admin", "dolandiriciliklamucadeleet@gmail.com");
-                    MailboxAddress mailboxAddressTo = new MailboxAddress("User", user.Email);
-                    mimeMessage.From.Add(mailboxAddressFrom);
-                    mimeMessage.To.Add(mailboxAddressTo);
-
-                    var bodybuilder = new BodyBuilder();
-                    bodybuilder.TextBody = "Kayıt işlemini gerçekleştirmek için onay kodunuz :" + code;
-                    mimeMessage.Body = bodybuilder.ToMessageBody();
-                    mimeMessage.Subject = "Academic Appointment Onay Kodu";
-
-                    SmtpClient client = new SmtpClient();
-                    client.Connect("smtp.gmail.com", 587, false);
-                    client.Authenticate("dolandiriciliklamucadeleet", "pddagdtfbczidkdq");
-                    client.Send(mimeMessage);
-                    client.Disconnect(true);
-
+                    // Mail gönderme işlemi
+                    await _mailService.SendConfirmationEmailAsync(user.Email, code);
                     TempData["Mail"] = user.Email;
-
-                    // Başarılıysa ana sayfaya yönlendiriyoruz
                     return RedirectToAction("ConfirmMail", "Account");
                 }
 
-                // Hata varsa ModelState'e ekliyoruz
                 foreach (var error in result.Errors)
                 {
                     ModelState.AddModelError("", error.Description);
                 }
             }
 
-            // Eğer model geçerli değilse veya işlem başarısız olduysa tekrar formu gösteriyoruz
             return View(model);
         }
 
@@ -117,12 +93,10 @@ namespace AcademicAppointment.Presentation.Controllers
             ViewBag.v = value;
             return View();
         }
-
+        // POST: Account/ConfirmMail
         [HttpPost]
         public async Task<IActionResult> ConfirmMail(ConfirmMailViewModel confirmMailViewModel)
         {
-             
-            
             var user = await _userManager.FindByEmailAsync(confirmMailViewModel.Mail);
             if (user.ConfirmCode == confirmMailViewModel.ConfirmCode)
             {
@@ -130,12 +104,6 @@ namespace AcademicAppointment.Presentation.Controllers
                 await _userManager.UpdateAsync(user);
                 return RedirectToAction("Login", "Account");
             }
-            return View();
-        }
-
-        [HttpGet]
-        public IActionResult Profile()
-        {
             return View();
         }
 
@@ -151,25 +119,18 @@ namespace AcademicAppointment.Presentation.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _signInManager.PasswordSignInAsync(
-                    model.Email, model.Password, false, true);
-
+                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, true);
                 if (result.Succeeded)
                 {
-                    var user =await _userManager.FindByEmailAsync(model.Email);
-                    if (user.EmailConfirmed == true)
+                    var user = await _userManager.FindByEmailAsync(model.Email);
+                    if (user.EmailConfirmed)
                     {
                         return RedirectToAction("Profile", "Account");
-
                     }
-                    // mail adresini onaylayın
-
                 }
-                //kullanıcı adı veya şifre yanlş
 
                 ModelState.AddModelError("", "Geçersiz giriş denemesi.");
             }
-
             return View(model);
         }
 
@@ -181,72 +142,18 @@ namespace AcademicAppointment.Presentation.Controllers
             return RedirectToAction("Index", "Home");
         }
 
-        // GET: Account/CreateRole
-        public IActionResult CreateRole()
+        [HttpGet]
+        public IActionResult Profile()
         {
             return View();
         }
 
-        // POST: Account/CreateRole
-        [HttpPost]
-        public async Task<IActionResult> CreateRole(string roleName)
-        {
-            if (!string.IsNullOrEmpty(roleName))
-            {
-                var roleExists = await _roleManager.RoleExistsAsync(roleName);
-                if (!roleExists)
-                {
-                    var role = new AppRole { Name = roleName };
-                    var result = await _roleManager.CreateAsync(role);
-                    if (result.Succeeded)
-                    {
-                        return RedirectToAction("Index", "Home");
-                    }
-                }
-                else
-                {
-                    ModelState.AddModelError("", "Bu rol zaten mevcut.");
-                }
-            }
-            return View();
-        }
-
-        // GET: Account/AssignRole
-        public IActionResult AssignRole()
-        {
-            return View();
-        }
-
-        // POST: Account/AssignRole
-        [HttpPost]
-        public async Task<IActionResult> AssignRole(string email, string roleName)
-        {
-            var user = await _userManager.FindByEmailAsync(email);
-            if (user == null)
-            {
-                ModelState.AddModelError("", "Kullanıcı bulunamadı.");
-                return View();
-            }
-
-            var roleExists = await _roleManager.RoleExistsAsync(roleName);
-            if (!roleExists)
-            {
-                ModelState.AddModelError("", "Böyle bir rol bulunamadı.");
-                return View();
-            }
-
-            var result = await _userManager.AddToRoleAsync(user, roleName);
-            if (result.Succeeded)
-            {
-                return RedirectToAction("Index", "Home");
-            }
-
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError("", error.Description);
-            }
-
-            return View();
-        }
     }
 }
+
+
+
+
+
+
+

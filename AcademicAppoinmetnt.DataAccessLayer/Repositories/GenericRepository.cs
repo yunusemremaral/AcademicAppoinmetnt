@@ -21,13 +21,35 @@ namespace AcademicAppoinmetnt.DataAccessLayer.Repositories
         }
 
         public async Task<T> GetByIdAsync(string id) => await _dbSet.FindAsync(id);
-        public async Task<IEnumerable<T>> GetAllAsync() => await _dbSet.ToListAsync();
-        public async Task AddAsync(T entity) => await _dbSet.AddAsync(entity);
-        public void Update(T entity) => _dbSet.Update(entity);
-        public void Delete(T entity) => _dbSet.Remove(entity);
-        public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
-            => await _dbSet.Where(predicate).ToListAsync();
 
-        public async Task<int> SaveChangesAsync() => await _context.SaveChangesAsync();
+        public async Task<IEnumerable<T>> GetAllAsync() => await _dbSet.ToListAsync();
+
+        public async Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _dbSet.Where(predicate).ToListAsync();
+        }
+
+        public async Task<T> FirstOrDefaultAsync(Expression<Func<T, bool>> predicate)
+        {
+            return await _dbSet.FirstOrDefaultAsync(predicate);
+        }
+
+        public async Task AddAsync(T entity)
+        {
+            await _dbSet.AddAsync(entity);
+            await _context.SaveChangesAsync(); // **Save işlemini burada yapıyoruz**
+        }
+
+        public async Task UpdateAsync(T entity)
+        {
+            _dbSet.Update(entity);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteAsync(T entity)
+        {
+            _dbSet.Remove(entity);
+            await _context.SaveChangesAsync();
+        }
     }
 }

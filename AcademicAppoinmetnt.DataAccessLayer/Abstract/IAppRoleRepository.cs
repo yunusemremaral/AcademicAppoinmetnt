@@ -5,6 +5,5 @@ namespace AcademicAppoinmetnt.DataAccessLayer.Abstract
 {
     public interface IAppRoleRepository : IGenericRepository<AppRole>
     {
-        Task<AppRole> GetByNameAsync(string roleName);
     }
 }

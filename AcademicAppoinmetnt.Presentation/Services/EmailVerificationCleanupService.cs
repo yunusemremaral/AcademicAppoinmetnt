@@ -1,13 +1,14 @@
 ﻿using AcademicAppoinmetnt.DataAccessLayer.Abstract;
+using AcademicAppointment.BusinessLayer.Abstract;
 
 namespace AcademicAppointment.Presentation.Services
 {
     public class EmailVerificationCleanupService
     {
-        private readonly IAppUserRepository _userRepository;
+        private readonly IAppUserService _userRepository;
         private readonly ILogger<EmailVerificationCleanupService> _logger;
 
-        public EmailVerificationCleanupService(IAppUserRepository userRepository, ILogger<EmailVerificationCleanupService> logger)
+        public EmailVerificationCleanupService(IAppUserService userRepository, ILogger<EmailVerificationCleanupService> logger)
         {
             _userRepository = userRepository;
             _logger = logger;
@@ -17,13 +18,12 @@ namespace AcademicAppointment.Presentation.Services
         {
             try
             {
-                var users = _userRepository.GetAllAsync().Result; // Tüm kullanıcıları alıyoruz (senkronize edilmiş şekilde)
+                var users = _userRepository.TGetAllAsync().Result; // Tüm kullanıcıları alıyoruz (senkronize edilmiş şekilde)
                 foreach (var user in users)
                 {
                     if (!user.EmailConfirmed) // Eğer e-posta doğrulanmamışsa
                     {
-                        _userRepository.Delete(user); // Onaylanmamış hesapları siliyoruz
-                        _userRepository.SaveChangesAsync();
+                        _userRepository.TDeleteAsync(user); // Onaylanmamış hesapları siliyoruz
                         _logger.LogInformation($"User {user.SchoolNumber} with email {user.Email} has been deleted for unverified email.");
                     }
                 }

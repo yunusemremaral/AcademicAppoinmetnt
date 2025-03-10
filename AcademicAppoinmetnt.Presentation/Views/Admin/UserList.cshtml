@@ -1,11 +1,29 @@
-﻿@model IEnumerable<AppUser>
-@{
-    ViewData["Title"] = "UserList";
-    Layout = "~/Views/Shared/_LayoutAcademic.cshtml";
-}
+﻿@model List<AppUserViewModel>
 
-<
-@foreach(var item in Model)
-{
-    <h1>@item.Email</h1>    
-}
+<h2>Kullanıcı Listesi</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Email</th>
+            <th>School Number</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model)
+        {
+            <tr>
+                <td>@user.Email</td>
+                <td>@user.SchoolNumber</td>
+                <td>
+                    <a href="@Url.Action("EditUser", new { email = user.Email })" class="btn btn-primary">Edit</a>
+                    <form method="post" action="@Url.Action("DeleteUser", new { email = user.Email })" style="display:inline;">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                    <a href="@Url.Action("AssignRole", new { email = user.Email })" class="btn btn-info">Assign Role</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
