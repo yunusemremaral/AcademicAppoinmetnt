@@ -9,9 +9,12 @@ namespace AcademicAppointment.BusinessLayer.Abstract
 {
     public interface IAppointmentService : IGenericService<Appointment>
     {
-        Task<IEnumerable<Appointment>> GetAppointmentsByStudentIdAsync(string studentId);
-        Task<IEnumerable<Appointment>> GetAppointmentsByTeacherIdAsync(string teacherId);
-        Task<IEnumerable<Appointment>> GetAppointmentsBetweenStudentAndTeacherAsync(string studentId, string teacherId);
+        Task<IEnumerable<Appointment>> TGetAppointmentsByStudentIdAsync(string studentId);
+        Task<IEnumerable<Appointment>> TGetAppointmentsByTeacherIdAsync(string teacherId);
+        Task<IEnumerable<Appointment>> TGetAppointmentsBetweenStudentAndTeacherAsync(string studentId, string teacherId);
+
+        Task<IEnumerable<Appointment>> TGetAppointmentsWithDetailsAsync();
+
     }
 
 }

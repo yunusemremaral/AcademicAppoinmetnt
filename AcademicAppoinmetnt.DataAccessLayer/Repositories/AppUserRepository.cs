@@ -10,6 +10,12 @@ namespace AcademicAppoinmetnt.DataAccessLayer.Repositories
     {
         public AppUserRepository(IdentityContext context) : base(context) { }
 
-       
+
+        // Akademisyen rolündeki kullanıcıları getirme
+        
+
+
+
+
     }
 }

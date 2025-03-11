@@ -1,0 +1,16 @@
+﻿@model Appointment
+@{
+    ViewData["Title"] = "Delete";
+    Layout = "~/Views/Shared/_LayoutAcademic.cshtml";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<p>Bu randevuyu silmek istediğinizden emin misiniz?</p>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" name="id" value="@Model.AppointmentId" />
+    <button type="submit" class="btn btn-danger">Evet, sil</button>
+    <a href="@Url.Action("Index", "Appointment")" class="btn btn-secondary">İptal</a>
+</form>
+

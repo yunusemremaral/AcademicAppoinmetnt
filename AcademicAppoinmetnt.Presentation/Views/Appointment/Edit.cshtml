@@ -1,0 +1,40 @@
+﻿@model Appointment
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_LayoutAcademic.cshtml";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" name="AppointmentId" value="@Model.AppointmentId" />
+
+    <div class="form-group">
+        <label for="Subject">Konu</label>
+        <input type="text" class="form-control" id="Subject" name="Subject" value="@Model.Subject" required />
+    </div>
+
+    <div class="form-group">
+        <label for="StartTime">Başlangıç Zamanı</label>
+        <input type="datetime-local" class="form-control" id="StartTime" name="StartTime" value="@Model.StartTime.ToString("yyyy-MM-ddTHH:mm")" required />
+    </div>
+
+    <div class="form-group">
+        <label for="EndTime">Bitiş Zamanı</label>
+        <input type="datetime-local" class="form-control" id="EndTime" name="EndTime" value="@Model.EndTime.ToString("yyyy-MM-ddTHH:mm")" required />
+    </div>
+
+    <div class="form-group">
+        <label for="StudentId">Öğrenci</label>
+        <input type="text" class="form-control" id="StudentId" name="StudentId" value="@Model.StudentId" readonly />
+    </div>
+
+    <div class="form-group">
+        <label for="TeacherId">Öğretmen</label>
+        <input type="text" class="form-control" id="TeacherId" name="TeacherId" value="@Model.TeacherId" readonly />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Kaydet</button>
+    <a href="@Url.Action("Index", "Appointment")" class="btn btn-secondary">İptal</a>
+</form>
+

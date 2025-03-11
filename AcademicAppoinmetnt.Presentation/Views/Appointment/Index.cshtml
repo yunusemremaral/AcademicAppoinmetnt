@@ -1,0 +1,48 @@
+﻿@model IEnumerable<AppointmentViewModel2>
+
+@{
+    ViewData["Title"] = "Randevular";
+    Layout = "~/Views/Shared/_LayoutAcademic.cshtml";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Randevu ID</th>
+            <th>Öğrenci</th>
+            <th>Öğretmen</th>
+            <th>Başlangıç Zamanı</th>
+            <th>Bitiş Zamanı</th>
+            <th>Durum</th>
+            <th>Detaylar</th>
+            <th>Düzenle</th>
+            <th>Sil</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var appointment in Model)
+        {
+            <tr>
+                <td>@appointment.AppointmentId</td>
+                <td>@appointment.StudentEmail</td>
+                <td>@appointment.TeacherEmail</td>
+                <td>@appointment.StartTime.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>@appointment.EndTime.ToString("dd/MM/yyyy HH:mm")</td>
+                <td>@appointment.Status</td>
+                <td>
+                    <a href="@Url.Action("Details", "Appointment", new { id = appointment.AppointmentId })" class="btn btn-info">Detaylar</a>
+                </td>
+                <td>
+                    <a href="@Url.Action("Edit", "Appointment", new { id = appointment.AppointmentId })" class="btn btn-warning">Düzenle</a>
+                </td>
+                <td>
+                    <a href="@Url.Action("Delete", "Appointment", new { id = appointment.AppointmentId })" class="btn btn-danger">Sil</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<a href="@Url.Action("Create", "Appointment")" class="btn btn-success">Yeni Randevu Ekle</a>

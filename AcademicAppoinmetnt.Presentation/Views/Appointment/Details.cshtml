@@ -1,0 +1,22 @@
+﻿@model Appointment
+
+@{
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_LayoutAcademic.cshtml";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<div>
+    <h4>Randevu ID: @Model.AppointmentId</h4>
+    <p><strong>Öğrenci:</strong> @Model.Student.Email</p>
+    <p><strong>Öğretmen:</strong> @Model.Teacher.Email</p>
+    <p><strong>Başlangıç Zamanı:</strong> @Model.StartTime.ToString("dd/MM/yyyy HH:mm")</p>
+    <p><strong>Bitiş Zamanı:</strong> @Model.EndTime.ToString("dd/MM/yyyy HH:mm")</p>
+    <p><strong>Konu:</strong> @Model.Subject</p>
+    <p><strong>Durum:</strong> @Model.Status.ToString()</p>
+</div>
+
+<a href="@Url.Action("Index", "Appointment")" class="btn btn-secondary">Geri Dön</a>
+
+

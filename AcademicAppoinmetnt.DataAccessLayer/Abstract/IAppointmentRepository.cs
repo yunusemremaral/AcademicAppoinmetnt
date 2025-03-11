@@ -15,5 +15,8 @@ namespace AcademicAppointment.DataAccessLayer.Abstract
         Task<IEnumerable<Appointment>> GetAppointmentsByTeacherIdAsync(string teacherId);
         Task<IEnumerable<Appointment>> GetAppointmentsBetweenStudentAndTeacherAsync(string studentId, string teacherId);
 
+        Task<IEnumerable<Appointment>> GetAppointmentsWithDetailsAsync();
+
+
     }
 }

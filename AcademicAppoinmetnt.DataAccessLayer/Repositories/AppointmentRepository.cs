@@ -35,5 +35,12 @@ namespace AcademicAppoinmetnt.DataAccessLayer.Repositories
                 .Where(a => a.StudentId == studentId && a.TeacherId == teacherId)
                 .ToListAsync();
         }
+        public async Task<IEnumerable<Appointment>> GetAppointmentsWithDetailsAsync()
+        {
+            return await _context.Set<Appointment>()
+                .Include(a => a.Student)  // Öğrenci bilgilerini dahil et
+                .Include(a => a.Teacher)  // Öğretmen bilgilerini dahil et
+                .ToListAsync();
+        }
     }
 }

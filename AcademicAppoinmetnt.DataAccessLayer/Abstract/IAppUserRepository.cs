@@ -6,5 +6,6 @@ namespace AcademicAppoinmetnt.DataAccessLayer.Abstract
 {
     public interface IAppUserRepository : IGenericRepository<AppUser>
     {
+
     }
 }

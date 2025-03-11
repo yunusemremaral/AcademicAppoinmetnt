@@ -20,21 +20,26 @@ namespace AcademicAppointment.BusinessLayer.Concrete
         }
 
         // Öğrencinin randevularını almak
-        public async Task<IEnumerable<Appointment>> GetAppointmentsByStudentIdAsync(string studentId)
+        public async Task<IEnumerable<Appointment>> TGetAppointmentsByStudentIdAsync(string studentId)
         {
             return await _appointmentRepository.GetAppointmentsByStudentIdAsync(studentId);
         }
 
         // Öğretmenin randevularını almak
-        public async Task<IEnumerable<Appointment>> GetAppointmentsByTeacherIdAsync(string teacherId)
+        public async Task<IEnumerable<Appointment>> TGetAppointmentsByTeacherIdAsync(string teacherId)
         {
             return await _appointmentRepository.GetAppointmentsByTeacherIdAsync(teacherId);
         }
 
         // Öğrenci ve öğretmen arasındaki randevuları almak
-        public async Task<IEnumerable<Appointment>> GetAppointmentsBetweenStudentAndTeacherAsync(string studentId, string teacherId)
+        public async Task<IEnumerable<Appointment>> TGetAppointmentsBetweenStudentAndTeacherAsync(string studentId, string teacherId)
         {
             return await _appointmentRepository.GetAppointmentsBetweenStudentAndTeacherAsync(studentId, teacherId);
+        }
+
+        public async Task<IEnumerable<Appointment>> TGetAppointmentsWithDetailsAsync()
+        {
+            return await _appointmentRepository.GetAppointmentsWithDetailsAsync();
         }
     }
 }
