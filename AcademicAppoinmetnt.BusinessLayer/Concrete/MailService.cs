@@ -1,35 +1,43 @@
 ﻿using AcademicAppointment.BusinessLayer.Abstract;
 using MailKit.Net.Smtp;
 using MimeKit;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace AcademicAppointment.BusinessLayer.Concrete
 {
     public class MailService : IMailService
     {
+        private const string SenderEmail = "dolandiriciliklamucadeleet@gmail.com";
+        private const string SenderPassword = "pddagdtfbczidkdq";
+        private const string SmtpServer = "smtp.gmail.com";
+        private const int SmtpPort = 587;
+
         public async Task SendConfirmationEmailAsync(string toEmail, int code)
         {
-            MimeMessage mimeMessage = new MimeMessage();
-            var mailboxAddressFrom = new MailboxAddress("Academic Appointment Admin", "dolandiriciliklamucadeleet@gmail.com");
-            var mailboxAddressTo = new MailboxAddress("User", toEmail);
-            mimeMessage.From.Add(mailboxAddressFrom);
-            mimeMessage.To.Add(mailboxAddressTo);
+            await SendEmailAsync(toEmail, "Academic Appointment Onay Kodu",
+                $"Kayıt işlemini gerçekleştirmek için onay kodunuz: {code}");
+        }
+        public async Task SendPasswordResetEmailAsync(string toEmail, string resetLink)
+        {
+            await SendEmailAsync(toEmail, "Şifre Sıfırlama İsteği",resetLink);
+        }
 
-            var bodyBuilder = new BodyBuilder
-            {
-                TextBody = $"Kayıt işlemini gerçekleştirmek için onay kodunuz: {code}"
-            };
+
+
+        private async Task SendEmailAsync(string toEmail, string subject, string body)
+        {
+            MimeMessage mimeMessage = new MimeMessage();
+            mimeMessage.From.Add(new MailboxAddress("Academic Appointment Admin", SenderEmail));
+            mimeMessage.To.Add(new MailboxAddress("User", toEmail));
+            mimeMessage.Subject = subject;
+
+            var bodyBuilder = new BodyBuilder { TextBody = body };
             mimeMessage.Body = bodyBuilder.ToMessageBody();
-            mimeMessage.Subject = "Academic Appointment Onay Kodu";
 
             using (var client = new SmtpClient())
             {
-                client.Connect("smtp.gmail.com", 587, false);
-                client.Authenticate("dolandiriciliklamucadeleet", "pddagdtfbczidkdq");
+                client.Connect(SmtpServer, SmtpPort, false);
+                client.Authenticate(SenderEmail, SenderPassword);
                 await client.SendAsync(mimeMessage);
                 client.Disconnect(true);
             }

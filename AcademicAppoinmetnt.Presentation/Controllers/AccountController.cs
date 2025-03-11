@@ -143,9 +143,96 @@ namespace AcademicAppointment.Presentation.Controllers
         }
 
         [HttpGet]
-        public IActionResult Profile()
+        public async Task<IActionResult> Profile()
+        {
+            // Oturum açmış kullanıcıyı al
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null)
+            {
+                return RedirectToAction("Login", "Account"); // Kullanıcı oturum açmamışsa login sayfasına yönlendir
+            }
+
+            // Kullanıcının e-posta adresini View'a gönder
+            var model = new ProfileViewModel
+            {
+                Email = user.Email,
+                SchoolNumber = user.SchoolNumber // Diğer bilgileri de ekleyebilirsiniz
+            };
+
+            return View(model);
+        }
+
+        
+
+        [HttpGet]
+        public IActionResult ForgotPassword()
         {
             return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user == null || !(await _userManager.IsEmailConfirmedAsync(user)))
+                {
+                    // Kullanıcı bulunamadı veya e-posta doğrulanmamış
+                    return View("ForgotPasswordConfirmation");
+                }
+
+                // Şifre sıfırlama token'ı oluştur
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, token = token, email = user.Email }, protocol: HttpContext.Request.Scheme);
+
+                // E-posta gönder
+                await _mailService.SendPasswordResetEmailAsync(user.Email, callbackUrl);
+
+
+                return View("ForgotPasswordConfirmation");
+            }
+
+            return View(model);
+        }
+        [HttpGet]
+        public IActionResult ResetPassword(string token, string email)
+        {
+            if (token == null || email == null)
+            {
+                ModelState.AddModelError("", "Geçersiz şifre sıfırlama bağlantısı.");
+            }
+
+            var model = new ResetPasswordViewModel { Token = token, Email = email };
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = await _userManager.FindByEmailAsync(model.Email);
+                if (user == null)
+                {
+                    // Kullanıcı bulunamadığında hata mesajı ekleyelim
+                    ModelState.AddModelError("", "E-posta adresiyle ilişkilendirilmiş bir kullanıcı bulunamadı.");
+                    return View(model); // Hata mesajını döndürür
+                }
+
+                var result = await _userManager.ResetPasswordAsync(user, model.Token, model.Password);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction("ResetPasswordConfirmation");
+                }
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
+            }
+
+            return View(model);
         }
 
     }

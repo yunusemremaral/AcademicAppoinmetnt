@@ -9,5 +9,7 @@ namespace AcademicAppointment.BusinessLayer.Abstract
     public interface IMailService
     {
         Task SendConfirmationEmailAsync(string toEmail, int code);
+        Task SendPasswordResetEmailAsync(string toEmail, string resetLink); // Yeni metot
+
     }
 }

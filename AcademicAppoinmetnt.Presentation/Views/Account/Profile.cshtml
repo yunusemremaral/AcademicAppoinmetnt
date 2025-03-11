@@ -1,8 +1,23 @@
-﻿
+﻿@model ProfileViewModel
+
 @{
     ViewData["Title"] = "Profile";
     Layout = "~/Views/Shared/_LayoutAcademic.cshtml";
 }
 
-<h1>Profile</h1>
+<h2>Profil Bilgileri</h2>
 
+<div class="row">
+    <div class="col-md-6">
+        <dl class="row">
+            <dt class="col-sm-4">E-posta:</dt>
+            <dd class="col-sm-8">@Model.Email</dd>
+
+            <dt class="col-sm-4">Okul Numarası:</dt>
+            <dd class="col-sm-8">@Model.SchoolNumber</dd>
+        </dl>
+    </div>
+</div>
+
+<!-- Şifre Sıfırlama Butonu -->
+<a asp-action="ForgotPassword" asp-controller="Account" class="btn btn-warning">Şifremi Sıfırla</a>
