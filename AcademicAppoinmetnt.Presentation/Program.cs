@@ -3,6 +3,7 @@ using AcademicAppoinmetnt.DataAccessLayer.Context;
 using AcademicAppoinmetnt.DataAccessLayer.Repositories;
 using AcademicAppointment.BusinessLayer.Abstract;
 using AcademicAppointment.BusinessLayer.Concrete;
+using AcademicAppointment.DataAccessLayer.Abstract;
 using AcademicAppointment.EntityLayer.Identity;
 using AcademicAppointment.Presentation.Models;
 using AcademicAppointment.Presentation.Services;
@@ -36,6 +37,8 @@ builder.Services.AddScoped<IAppRoleService, AppRoleService>();
 builder.Services.AddScoped<IGenericService<AppUser>, GenericService<AppUser>>();
 builder.Services.AddScoped<IGenericService<AppRole>, GenericService<AppRole>>();
 builder.Services.AddScoped<IMailService, MailService>();
+builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 
 
 

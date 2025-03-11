@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using AcademicAppointment.EntityLayer.Identity;
+using AcademicAppointment.EntityLayer.Entities;
 
 namespace AcademicAppoinmetnt.DataAccessLayer.Context
 {
@@ -9,8 +10,9 @@ namespace AcademicAppoinmetnt.DataAccessLayer.Context
         public IdentityContext(DbContextOptions<IdentityContext> options) : base(options)
         {
         }
+        public DbSet<Appointment> Appointments { get; set; }
 
-      
+
 
     }
 }
