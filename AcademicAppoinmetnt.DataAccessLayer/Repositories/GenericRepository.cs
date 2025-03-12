@@ -51,5 +51,9 @@ namespace AcademicAppoinmetnt.DataAccessLayer.Repositories
             _dbSet.Remove(entity);
             await _context.SaveChangesAsync();
         }
+
+        
+        public async Task<T> GetIntByIdAsync(int id) => await _dbSet.FindAsync(id);
+
     }
 }

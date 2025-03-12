@@ -11,7 +11,19 @@ namespace AcademicAppoinmetnt.DataAccessLayer.Context
         {
         }
         public DbSet<Appointment> Appointments { get; set; }
+        public DbSet<Course> Courses { get; set; } 
 
+        protected override void OnModelCreating(ModelBuilder builder)
+        {
+            base.OnModelCreating(builder);
+
+            // Ders ve Öğretmen arasındaki ilişki
+            builder.Entity<Course>()
+                .HasOne(c => c.Instructor)
+                .WithMany() 
+                .HasForeignKey(c => c.InstructorId)
+                .OnDelete(DeleteBehavior.Restrict); // Öğretmen silinirse dersi silme
+        }
 
 
     }

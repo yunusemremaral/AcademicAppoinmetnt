@@ -9,6 +9,9 @@ namespace AcademicAppointment.BusinessLayer.Abstract
 {
     public interface IGenericService<T> where T : class
     {
+        
+        Task<T> TGetIntByIdAsync(int id);
+
         Task<T> TGetByIdAsync(string id);
         Task<IEnumerable<T>> TGetAllAsync();
         Task<IEnumerable<T>> TFindAsync(Expression<Func<T, bool>> predicate);

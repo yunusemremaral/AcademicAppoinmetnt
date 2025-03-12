@@ -7,6 +7,8 @@ namespace AcademicAppoinmetnt.DataAccessLayer.Abstract
 {
     public interface IGenericRepository<T> where T : class
     {
+        Task<T> GetIntByIdAsync(int id); // ID'ye göre getir
+
         Task<T> GetByIdAsync(string id); // ID'ye göre getir
         Task<IEnumerable<T>> GetAllAsync(); // Tüm verileri getir
         Task<IEnumerable<T>> FindAsync(Expression<Func<T, bool>> predicate); // Koşula göre liste getir

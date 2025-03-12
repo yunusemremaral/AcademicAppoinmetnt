@@ -1,0 +1,24 @@
+﻿@model CourserCreateViewModel
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_LayoutAcademic.cshtml";
+}
+
+<h2>Create Course</h2>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label for="Name">Course Name</label>
+        <input type="text" class="form-control" id="Name" name="Name" value="@Model.Name" required />
+    </div>
+
+    <div class="form-group">
+        <label>Akademisyen Seçin:</label>
+        <select asp-for="InstructorId" asp-items="ViewBag.Instructors" class="form-control">
+            <option value="">-- Akademisyen Seçin --</option>
+        </select>
+        <span asp-validation-for="InstructorId" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save</button>
+</form>

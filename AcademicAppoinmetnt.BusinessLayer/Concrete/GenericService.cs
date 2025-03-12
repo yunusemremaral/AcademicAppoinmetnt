@@ -23,5 +23,8 @@ namespace AcademicAppointment.BusinessLayer.Concrete
         public async Task TAddAsync(T entity) => await _repository.AddAsync(entity);
         public async Task TUpdateAsync(T entity) => await _repository.UpdateAsync(entity);
         public async Task TDeleteAsync(T entity) => await _repository.DeleteAsync(entity);
+
+        public async Task<T> TGetIntByIdAsync(int id) => await _repository.GetIntByIdAsync(id);
+
     }
 }

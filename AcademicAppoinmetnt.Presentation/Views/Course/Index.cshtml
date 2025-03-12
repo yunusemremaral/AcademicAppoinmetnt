@@ -1,0 +1,35 @@
+﻿@model IEnumerable<Course>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutAcademic.cshtml";
+}
+
+<h2>Course List</h2>
+
+<p>
+    <a href="@Url.Action("Create", "Course")" class="btn btn-primary">Create New Course</a>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Instructor</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var course in Model)
+        {
+            <tr>
+                <td>@course.Name</td>
+                <td>@course.Instructor.UserName</td> <!-- Akademisyeni gösteriyoruz -->
+                <td>
+                    <a href="@Url.Action("Edit", "Course", new { id = course.CourseId })" class="btn btn-warning">Edit</a>
+                    <a href="@Url.Action("Delete", "Course", new { id = course.CourseId })" class="btn btn-danger">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
