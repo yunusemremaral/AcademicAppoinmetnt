@@ -2,3 +2,5 @@
 Login kısmında cookie olaylarına bakcıaz 
 register suanlık tamam
 sonradan yeni kısıma baslıcaz yeni tablolar ekleyip onları migration ile ekliscez .
+corse 0 dan tekrar denicez
+intli metoda ceviricem appointmentları bosa string yapmaya gerek yok ...
