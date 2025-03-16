@@ -1,0 +1,36 @@
+﻿@model List<Notification>
+
+@{
+    ViewData["Title"] = "GlobalNotifications";
+    Layout = "~/Views/Shared/_LayoutAcademic.cshtml";
+}
+
+
+<h2>Global Notifications</h2>
+
+@if (Model == null || Model.Count == 0)
+{
+    <p>@ViewBag.Message</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Message</th>
+                <th>Read</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var notification in Model)
+            {
+                <tr>
+                    <td>@notification.Title</td>
+                    <td>@notification.Message</td>
+                    <td>@(notification.IsRead ? "Yes" : "No")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}

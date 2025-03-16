@@ -1,0 +1,26 @@
+﻿@model Notification
+
+@{
+    ViewData["Title"] = "CreateNotification";
+    Layout = "~/Views/Shared/_LayoutAcademic.cshtml";
+}
+
+<h2>Create Notification</h2>
+
+<form asp-action="CreateNotification" method="post">
+    <div class="form-group">
+        <label asp-for="Title" class="control-label"></label>
+        <input asp-for="Title" class="form-control" />
+        <span asp-validation-for="Title" class="text-danger"></span>
+    </div>
+    
+    <div class="form-group">
+        <label asp-for="Message" class="control-label"></label>
+        <textarea asp-for="Message" class="form-control"></textarea>
+        <span asp-validation-for="Message" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary">Create Notification</button>
+    </div>
+</form>
