@@ -1,0 +1,38 @@
+﻿@model IEnumerable<Room>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_LayoutAcademic.cshtml";
+}
+
+
+
+
+<h2>Oda Listesi</h2>
+<a asp-action="Create" class="btn btn-primary">Yeni Oda Ekle</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Oda Adı</th>
+            <th>Konum Açıklaması</th>
+            <th>İşlemler</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var room in Model)
+        {
+            <tr>
+                <td>@room.RoomId</td>
+                <td>@room.RoomName</td>
+                <td>@room.LocationDescription</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@room.RoomId" class="btn btn-warning btn-sm">Düzenle</a>
+                    <a asp-action="Delete" asp-route-id="@room.RoomId" class="btn btn-danger btn-sm">Sil</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

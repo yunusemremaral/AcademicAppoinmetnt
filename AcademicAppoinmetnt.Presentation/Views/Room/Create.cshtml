@@ -1,0 +1,45 @@
+﻿@model AcademicAppointment.EntityLayer.Entities.Room
+
+@{
+    ViewData["Title"] = "Yeni Oda Ekle";
+    Layout = "~/Views/Shared/_LayoutAcademic.cshtml";
+}
+
+<h2>Yeni Oda Ekle</h2>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="RoomName" class="control-label">Oda Adı</label>
+        <input asp-for="RoomName" class="form-control" required />
+        <span asp-validation-for="RoomName" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="TeacherId">Öğretmen Seç</label>
+        <select asp-for="TeacherId" class="form-control">
+            <option value="">Öğretmen Seçin</option>
+            @if (ViewBag.Users != null)
+            {
+                @foreach (var item in ViewBag.Users as List<SelectListItem>)
+                {
+                    <option value="@item.Value">@item.Text</option>
+                }
+            }
+        </select>
+        <span asp-validation-for="TeacherId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="LocationDescription">Konum Açıklaması</label>
+        <textarea asp-for="LocationDescription" class="form-control"></textarea>
+        <span asp-validation-for="LocationDescription" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Images">Oda Görselleri (JSON formatında)</label>
+        <input asp-for="Images" class="form-control" placeholder='["image1.jpg","image2.jpg"]' />
+        <span asp-validation-for="Images" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-success mt-2">Oluştur</button>
+</form>

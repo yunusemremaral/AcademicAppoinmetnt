@@ -16,7 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Veritabanı Bağlantısı
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-builder.Services.AddDbContext<IdentityContext>(options => options.UseSqlServer(connectionString));
+builder.Services.AddDbContext<IdentityContext>(options =>options.UseSqlServer(connectionString));
 
 // Identity Servisleri
 builder.Services.AddIdentity<AppUser, AppRole>()

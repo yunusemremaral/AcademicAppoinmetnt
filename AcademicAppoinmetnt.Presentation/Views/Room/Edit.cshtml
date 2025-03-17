@@ -1,0 +1,23 @@
+﻿@model Room
+
+@{
+    ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_LayoutAcademic.cshtml";
+}
+
+
+
+<h2>Oda Güncelle</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="RoomId" />
+    <div class="form-group">
+        <label for="RoomName">Oda Adı</label>
+        <input type="text" id="RoomName" name="RoomName" class="form-control" asp-for="RoomName" required />
+    </div>
+    <div class="form-group">
+        <label for="LocationDescription">Konum Açıklaması</label>
+        <textarea id="LocationDescription" name="LocationDescription" class="form-control" asp-for="LocationDescription"></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Güncelle</button>
+</form>

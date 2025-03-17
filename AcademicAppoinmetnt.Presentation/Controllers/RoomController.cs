@@ -4,11 +4,12 @@ using AcademicAppointment.EntityLayer.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Security.Claims;
 
 namespace AcademicAppointment.Presentation.Controllers
 {
-    [Authorize] // Kullanıcı girişi gerektiriyor
+    [Authorize] // Sadece giriş yapmış kullanıcılar erişebilir
     public class RoomController : Controller
     {
         private readonly IRoomService _roomService;
@@ -20,73 +21,106 @@ namespace AcademicAppointment.Presentation.Controllers
             _userManager = userManager;
         }
 
+
+        // Tüm Odaları Listeleme
         public async Task<IActionResult> Index()
         {
             var rooms = await _roomService.TGetAllAsync();
             return View(rooms);
         }
 
-        public async Task<IActionResult> Details(int id)
+        // Öğretmenin Kendi Odalarını Listeleme
+        public async Task<IActionResult> MyRooms()
         {
-            var room = await _roomService.TGetIntByIdAsync(id);
-            if (room == null) return NotFound();
-            return View(room);
+            var teacherId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (teacherId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var rooms = await _roomService.TFindAsync(r => r.TeacherId == teacherId);
+            return View(rooms);
         }
 
-        [Authorize(Roles = "Teacher")] // Sadece öğretmenler oluşturabilir
-        public IActionResult Create()
+        // Oda Ekleme - GET
+        public async Task<IActionResult> Create()
         {
+            var teachers = await _userManager.GetUsersInRoleAsync("Akademisyen");
+            ViewBag.Users = teachers.Select(t => new SelectListItem
+            {
+                Value = t.Id,
+                Text = t.Email
+            }).ToList();
+
             return View();
         }
 
         [HttpPost]
-        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Create(Room room)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            room.TeacherId = userId;
+            var teachers = await _userManager.GetUsersInRoleAsync("Akademisyen");
+            ViewBag.Users = teachers.Select(t => new SelectListItem
+            {
+                Value = t.Id,
+                Text = t.Email
+            }).ToList();
+
+            if (!ModelState.IsValid)
+            {
+                return View(room);
+            }
+
+            var teacher = await _userManager.FindByIdAsync(room.TeacherId);
+            if (teacher == null)
+            {
+                ModelState.AddModelError("", "Seçilen öğretmen bulunamadı.");
+                return View(room);
+            }
+
             await _roomService.TAddAsync(room);
             return RedirectToAction("Index");
         }
 
-        [Authorize(Roles = "Teacher")]
+
+        // Oda Güncelleme - GET
         public async Task<IActionResult> Edit(int id)
         {
             var room = await _roomService.TGetIntByIdAsync(id);
-            if (room == null) return NotFound();
-
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (room.TeacherId != userId) return Forbid();
+            if (room == null || room.TeacherId != User.FindFirstValue(ClaimTypes.NameIdentifier))
+            {
+                return Unauthorized();
+            }
 
             return View(room);
         }
 
+        // Oda Güncelleme - POST
         [HttpPost]
-        [Authorize(Roles = "Teacher")]
-        public async Task<IActionResult> Edit(int id, Room updatedRoom)
+        public async Task<IActionResult> Edit(Room room)
         {
-            var existingRoom = await _roomService.TGetIntByIdAsync(id);
-            if (existingRoom == null) return NotFound();
+            if (!ModelState.IsValid)
+            {
+                return View(room);
+            }
 
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (existingRoom.TeacherId != userId) return Forbid();
+            var existingRoom = await _roomService.TGetIntByIdAsync(room.RoomId);
+            if (existingRoom == null || existingRoom.TeacherId != User.FindFirstValue(ClaimTypes.NameIdentifier))
+            {
+                return Unauthorized();
+            }
 
-            existingRoom.RoomName = updatedRoom.RoomName;
-            existingRoom.Images = updatedRoom.Images;
-            existingRoom.LocationDescription = updatedRoom.LocationDescription;
-
-            await _roomService.TUpdateAsync(existingRoom);
+            await _roomService.TUpdateAsync(room);
             return RedirectToAction("Index");
         }
 
-        [Authorize(Roles = "Teacher")]
+        // Oda Silme
         public async Task<IActionResult> Delete(int id)
         {
             var room = await _roomService.TGetIntByIdAsync(id);
-            if (room == null) return NotFound();
-
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (room.TeacherId != userId) return Forbid();
+            if (room == null || room.TeacherId != User.FindFirstValue(ClaimTypes.NameIdentifier))
+            {
+                return Unauthorized();
+            }
 
             await _roomService.TDeleteAsync(room);
             return RedirectToAction("Index");
