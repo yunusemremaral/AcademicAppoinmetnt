@@ -1,0 +1,37 @@
+﻿@model Message
+
+@{
+    ViewData["Title"] = "Mesaj Gönder";
+    Layout = "~/Views/Shared/_LayoutAcademic.cshtml";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4 text-center">📩 Mesaj Gönder</h2>
+
+    <div class="card shadow p-4">
+        <form asp-action="SendMessage" method="post">
+            <div class="mb-3">
+                <label for="ReceiverId" class="form-label fw-bold">Alıcı</label>
+                <select id="ReceiverId" name="ReceiverId" class="form-select" required>
+                    <option value="">🔽 Alıcı Seçin</option>
+                    @foreach (var item in ViewBag.Users as SelectList)
+                    {
+                        <option value="@item.Value">@item.Text</option>
+                    }
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="MessageTitle" class="form-label fw-bold">Başlık</label>
+                <input type="text" id="MessageTitle" name="MessageTitle" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="Content" class="form-label fw-bold">Mesaj İçeriği</label>
+                <textarea id="Content" name="MessageText" class="form-control" rows="4" required></textarea>
+            </div>
+
+            <button type="submit" class="btn btn-primary w-100">📤 Gönder</button>
+        </form>
+    </div>
+</div>

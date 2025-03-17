@@ -44,6 +44,10 @@ builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IMessageRepository, MessageRepository>();
+builder.Services.AddScoped<IMessageService, MessageService>();
+builder.Services.AddScoped<IRoomRepository, RoomRepository>();
+builder.Services.AddScoped<IRoomService, RoomService>();
 
 
 
