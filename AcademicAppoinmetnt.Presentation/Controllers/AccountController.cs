@@ -9,6 +9,7 @@ using AcademicAppointment.BusinessLayer.Abstract;
 
 namespace AcademicAppointment.Presentation.Controllers
 {
+
     public class AccountController : Controller
     {
         private readonly UserManager<AppUser> _userManager;

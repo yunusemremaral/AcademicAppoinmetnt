@@ -1,0 +1,53 @@
+/* Global styles */
+* {
+  font-family: 'Geist Sans', system-ui, sans-serif;
+  font-size: 15px;
+}
+
+html, body {
+  font-size: 15px;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.2;
+}
+
+h1 {
+  font-size: 1.5rem;
+}
+
+h2 {
+  font-size: 1.25rem;
+}
+
+h3 {
+  font-size: 1.125rem;
+}
+
+h4 {
+  font-size: 1rem;
+}
+
+pre, code, kbd, samp {
+  font-family: 'Geist Mono', monospace;
+  font-size: 14px;
+}
+
+/* Daha küçük boşluklar için yardımcı sınıflar */
+.text-xxs {
+  font-size: 0.7rem;
+}
+
+
+.p-xxs {
+  padding: 0.25rem;
+}
+
+.m-xxs {
+  margin: 0.25rem;
+}
+
+/* Daha zarif gölgeler */
+.shadow-subtle {
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+} 
